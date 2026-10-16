@@ -1,0 +1,299 @@
+@import '@fontsource-variable/inter';
+
+/* ---------------------------------------------------------------------------
+   Lecture theme — "refined light": warm paper, glass cards, spring entrances.
+   Palette mirrors the book (LinearAlgebra.tex):
+     definitions #1F4E79 · theorems #6A1B9A · examples #2E7D32
+     remarks #546E7A · warnings #D84315
+--------------------------------------------------------------------------- */
+
+:root {
+  --ink: #16181d;
+  --ink-muted: #5c6470;
+  --paper: #fbfaf7;
+  --paper-soft: #f3f2ed;
+  --accent: #1f4e79;
+  --accent-soft: rgba(31, 78, 121, 0.08);
+  --c-def: #1f4e79;
+  --c-thm: #6a1b9a;
+  --c-ex: #2e7d32;
+  --c-rem: #546e7a;
+  --c-warn: #d84315;
+  --radius: 12px;
+  --spring: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.dark {
+  --ink: #e8e8e4;
+  --ink-muted: #9aa2ad;
+  --paper: #0e1116;
+  --paper-soft: #161a21;
+  --accent: #7aa7d4;
+  --accent-soft: rgba(122, 167, 212, 0.1);
+  --c-def: #7aa7d4;
+  --c-thm: #c08fdd;
+  --c-ex: #7cbf80;
+  --c-rem: #8fa3ad;
+  --c-warn: #f08a63;
+}
+
+/* ---- base ---- */
+.slidev-layout {
+  position: relative;
+  font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 85% -20%, var(--accent-soft), transparent 60%),
+    var(--paper);
+  color: var(--ink);
+  font-size: 1.06rem;
+  line-height: 1.62;
+  padding: 3.2rem 3.8rem;
+}
+
+/* faint film grain for texture */
+.slidev-layout::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.02 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---- staggered spring entrance for slide content ---- */
+.slidev-layout > *:not(.slidev-vclick-target) {
+  animation: rise-in 0.65s var(--spring) backwards;
+}
+.slidev-layout > *:nth-child(1) { animation-delay: 0.08s; }
+.slidev-layout > *:nth-child(2) { animation-delay: 0.16s; }
+.slidev-layout > *:nth-child(3) { animation-delay: 0.24s; }
+.slidev-layout > *:nth-child(4) { animation-delay: 0.32s; }
+.slidev-layout > *:nth-child(5) { animation-delay: 0.4s; }
+.slidev-layout > *:nth-child(6) { animation-delay: 0.48s; }
+.slidev-layout > *:nth-child(n + 7) { animation-delay: 0.56s; }
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.995);
+    filter: blur(3px);
+  }
+}
+
+/* ---- typography ---- */
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3 {
+  font-weight: 650;
+  letter-spacing: -0.022em;
+  color: var(--ink);
+}
+
+.slidev-layout h1 {
+  font-size: 1.95rem;
+  line-height: 1.2;
+  margin-bottom: 1.4rem;
+}
+.slidev-layout h1::after {
+  content: '';
+  display: block;
+  width: 46px;
+  height: 3px;
+  border-radius: 2px;
+  margin-top: 0.55rem;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 35%, transparent));
+  transform-origin: left;
+  animation: draw-line 0.8s 0.3s var(--spring) backwards;
+}
+@keyframes draw-line {
+  from { transform: scaleX(0); }
+}
+
+.slidev-layout p { margin: 0.55rem 0; }
+.slidev-layout strong { font-weight: 640; }
+
+.slidev-layout ul,
+.slidev-layout ol { margin: 0.5rem 0 0.5rem 0.2rem; }
+.slidev-layout li { margin: 0.32rem 0; }
+.slidev-layout ul li::marker { color: var(--accent); }
+
+.slidev-layout .katex-display { margin: 0.9rem 0; }
+.slidev-layout .katex { font-size: 1.06em; }
+
+/* ---- cover slide ---- */
+.slidev-layout.cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+/* slow-drifting aurora */
+.slidev-layout.cover::before {
+  content: '';
+  position: absolute;
+  inset: -25%;
+  pointer-events: none;
+  background:
+    radial-gradient(620px 620px at 72% 28%, var(--accent-soft), transparent 65%),
+    radial-gradient(520px 520px at 18% 85%, color-mix(in srgb, var(--c-thm) 6%, transparent), transparent 70%);
+  animation: drift 16s ease-in-out infinite alternate;
+}
+@keyframes drift {
+  to { transform: translate(-3.5%, 4.5%) rotate(1.2deg); }
+}
+/* faint unit-circle motif */
+.slidev-layout.cover .kicker::after {
+  content: '';
+  position: absolute;
+  width: 880px;
+  height: 880px;
+  right: -22%;
+  top: -38%;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 14%, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.slidev-layout.cover .kicker {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.1rem;
+}
+.slidev-layout.cover h1 {
+  font-size: 3.9rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  margin-bottom: 0.4rem;
+}
+.slidev-layout.cover h1::after { width: 68px; height: 4px; }
+.slidev-layout.cover .subtitle {
+  font-size: 1.15rem;
+  color: var(--ink-muted);
+  margin-top: 1rem;
+}
+
+/* ---- section divider slide ---- */
+.slidev-layout.section-slide {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+.slidev-layout.section-slide .sec-num {
+  position: absolute;
+  right: 2.2rem;
+  bottom: -3.4rem;
+  font-size: 17rem;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--accent) 26%, transparent);
+  user-select: none;
+  pointer-events: none;
+  animation: num-in 0.9s 0.1s var(--spring) backwards;
+}
+@keyframes num-in {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}
+.slidev-layout.section-slide .kicker {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.9rem;
+}
+.slidev-layout.section-slide h1 {
+  font-size: 3.2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.slidev-layout.section-slide h1::after { width: 58px; }
+
+/* ---- theorem-style boxes: glass cards ---- */
+.thm {
+  position: relative;
+  margin: 0.9rem 0;
+  padding: 0.75rem 1.15rem 0.75rem 1.2rem;
+  border-radius: 6px var(--radius) var(--radius) 6px;
+  border: 1px solid color-mix(in srgb, var(--ink) 7%, transparent);
+  border-left: 3px solid var(--c-rem);
+  background: color-mix(in srgb, var(--c-rem) 5%, rgba(255, 255, 255, 0.55));
+  backdrop-filter: blur(10px);
+  box-shadow: 0 14px 34px -22px color-mix(in srgb, var(--ink) 30%, transparent);
+  transition: transform 0.3s var(--spring), box-shadow 0.3s var(--spring);
+}
+.thm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 44px -22px color-mix(in srgb, var(--ink) 36%, transparent);
+}
+.thm > p:first-child { margin-top: 0; }
+.thm > p:last-child { margin-bottom: 0; }
+
+.thm .lbl {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--c-rem);
+}
+
+.thm.def   { border-left-color: var(--c-def);  background: color-mix(in srgb, var(--c-def) 5%, rgba(255,255,255,0.55)); }
+.thm.def   .lbl { color: var(--c-def); }
+.thm.theo  { border-left-color: var(--c-thm);  background: color-mix(in srgb, var(--c-thm) 5%, rgba(255,255,255,0.55)); }
+.thm.theo  .lbl { color: var(--c-thm); }
+.thm.ex    { border-left-color: var(--c-ex);   background: color-mix(in srgb, var(--c-ex) 5%, rgba(255,255,255,0.55)); }
+.thm.ex    .lbl { color: var(--c-ex); }
+.thm.warn  { border-left-color: var(--c-warn); background: color-mix(in srgb, var(--c-warn) 6%, rgba(255,255,255,0.55)); }
+.thm.warn  .lbl { color: var(--c-warn); }
+.thm.rem   { border-left-color: var(--c-rem); }
+
+html.dark .thm {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.07);
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+/* ---- click reveal: rise, settle, unblur ---- */
+.slidev-vclick-target {
+  transition:
+    opacity 0.5s var(--spring),
+    transform 0.5s var(--spring),
+    filter 0.5s var(--spring);
+}
+.slidev-vclick-hidden {
+  opacity: 0;
+  transform: translateY(14px) scale(0.995);
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+/* ---- two-column helper ---- */
+.cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.6rem;
+  align-items: start;
+}
+
+/* ---- widgets ---- */
+.widget {
+  display: flex;
+  justify-content: center;
+  margin: 0.6rem 0;
+}
+.widget svg {
+  box-shadow: 0 16px 40px -24px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.slidev-page { color: var(--ink-muted); }

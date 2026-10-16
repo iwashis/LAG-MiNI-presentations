@@ -1,0 +1,200 @@
+@import '@fontsource-variable/inter';
+
+/* ---------------------------------------------------------------------------
+   Lecture theme — clean, minimal, mathematical.
+   Palette mirrors the book (LinearAlgebra.tex):
+     definitions #1F4E79 · theorems #6A1B9A · examples #2E7D32
+     remarks #546E7A · warnings #D84315
+--------------------------------------------------------------------------- */
+
+:root {
+  --ink: #16181d;
+  --ink-muted: #5c6470;
+  --paper: #fbfbf9;
+  --paper-soft: #f3f3ef;
+  --accent: #1f4e79;
+  --accent-soft: rgba(31, 78, 121, 0.08);
+  --c-def: #1f4e79;
+  --c-thm: #6a1b9a;
+  --c-ex: #2e7d32;
+  --c-rem: #546e7a;
+  --c-warn: #d84315;
+  --radius: 10px;
+}
+
+html.dark {
+  --ink: #e8e8e4;
+  --ink-muted: #9aa2ad;
+  --paper: #0e1116;
+  --paper-soft: #161a21;
+  --accent: #7aa7d4;
+  --accent-soft: rgba(122, 167, 212, 0.1);
+  --c-def: #7aa7d4;
+  --c-thm: #c08fdd;
+  --c-ex: #7cbf80;
+  --c-rem: #8fa3ad;
+  --c-warn: #f08a63;
+}
+
+/* ---- base typography ---- */
+.slidev-layout {
+  font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 1.06rem;
+  line-height: 1.62;
+  padding: 3.2rem 3.8rem;
+}
+
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3 {
+  font-weight: 650;
+  letter-spacing: -0.022em;
+  color: var(--ink);
+}
+
+/* frame title */
+.slidev-layout h1 {
+  font-size: 1.85rem;
+  line-height: 1.2;
+  margin-bottom: 1.4rem;
+}
+.slidev-layout h1::after {
+  content: '';
+  display: block;
+  width: 44px;
+  height: 3px;
+  border-radius: 2px;
+  margin-top: 0.55rem;
+  background: var(--accent);
+}
+
+.slidev-layout p { margin: 0.55rem 0; }
+.slidev-layout strong { font-weight: 640; }
+.slidev-layout em { color: inherit; }
+
+.slidev-layout ul,
+.slidev-layout ol { margin: 0.5rem 0 0.5rem 0.2rem; }
+.slidev-layout li { margin: 0.32rem 0; }
+.slidev-layout ul li::marker { color: var(--accent); }
+
+/* display math breathing room */
+.slidev-layout .katex-display { margin: 0.9rem 0; }
+.slidev-layout .katex { font-size: 1.06em; }
+
+/* ---- cover slide ---- */
+.slidev-layout.cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background:
+    radial-gradient(1100px 500px at 12% -10%, var(--accent-soft), transparent 60%),
+    var(--paper);
+}
+.slidev-layout.cover .kicker {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.1rem;
+}
+.slidev-layout.cover h1 {
+  font-size: 3.6rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  margin-bottom: 0.4rem;
+}
+.slidev-layout.cover h1::after { width: 64px; height: 4px; }
+.slidev-layout.cover .subtitle {
+  font-size: 1.15rem;
+  color: var(--ink-muted);
+  margin-top: 1rem;
+}
+
+/* ---- section divider slide ---- */
+.slidev-layout.section-slide {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background:
+    radial-gradient(900px 420px at 88% 110%, var(--accent-soft), transparent 60%),
+    var(--paper);
+}
+.slidev-layout.section-slide .kicker {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.9rem;
+}
+.slidev-layout.section-slide h1 {
+  font-size: 2.9rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.slidev-layout.section-slide h1::after { width: 56px; }
+
+/* ---- theorem-style boxes (match the book's tcolorbox style) ---- */
+.thm {
+  position: relative;
+  margin: 0.9rem 0;
+  padding: 0.7rem 1.1rem 0.7rem 1.15rem;
+  border-left: 3px solid var(--c-rem);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: color-mix(in srgb, var(--c-rem) 5%, transparent);
+}
+.thm > p:first-child { margin-top: 0; }
+.thm > p:last-child { margin-bottom: 0; }
+
+.thm .lbl {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--c-rem);
+}
+
+.thm.def   { border-color: var(--c-def);  background: color-mix(in srgb, var(--c-def) 5%, transparent); }
+.thm.def   .lbl { color: var(--c-def); }
+.thm.theo  { border-color: var(--c-thm);  background: color-mix(in srgb, var(--c-thm) 5%, transparent); }
+.thm.theo  .lbl { color: var(--c-thm); }
+.thm.ex    { border-color: var(--c-ex);   background: color-mix(in srgb, var(--c-ex) 5%, transparent); }
+.thm.ex    .lbl { color: var(--c-ex); }
+.thm.warn  { border-color: var(--c-warn); background: color-mix(in srgb, var(--c-warn) 6%, transparent); }
+.thm.warn  .lbl { color: var(--c-warn); }
+.thm.rem   { border-color: var(--c-rem); }
+
+/* ---- click reveal: gentle rise + fade ---- */
+.slidev-vclick-target {
+  transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.slidev-vclick-hidden {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+/* ---- two-column helper ---- */
+.cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.6rem;
+  align-items: start;
+}
+
+/* ---- widget frame ---- */
+.widget {
+  display: flex;
+  justify-content: center;
+  margin: 0.6rem 0;
+}
+
+/* footer page number */
+.slidev-page  { color: var(--ink-muted); }

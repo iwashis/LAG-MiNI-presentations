@@ -1,0 +1,340 @@
+% Lecture 4 — Matrices
+% Compiled to web slides by tools/tex2slides.mjs
+
+\lecture{Matrices}{Linear Algebra · Warsaw University of Technology}{Lecture 4 · Tomasz Brengos}
+
+\section{Motivation}
+
+\begin{frame}{The central data structure of computing}
+If vectors are the standard container for data, \emph{matrices} are the standard container for everything
+two-dimensional — or that \emph{acts} on data.
+
+\begin{itemize}
+\item A greyscale \textbf{image} is a matrix of pixel intensities; filters are matrix operations.
+\pause
+\item A \textbf{graph} — road network, social network, the web — is its \emph{adjacency matrix}.
+\pause
+\item A neural network \textbf{layer} is a matrix of weights; training adjusts its entries.
+\pause
+\item A spreadsheet, a database table, a search engine's term–document table — matrices again.
+\end{itemize}
+\note{Big picture frame: everything after this is in service of making these examples computable.}
+\end{frame}
+
+\begin{frame}{Why multiplication looks so strange}
+The row-by-column rule for \emph{multiplying} matrices is the strangest-looking definition of this chapter
+— and the most consequential one: it is designed precisely so multiplication corresponds to
+\emph{composition} of transformations (Chapter on linear mappings).
+
+\pause
+
+\begin{remark}
+This is why GPUs — the chips behind both video games and AI training — are machines optimised for one
+task: multiplying enormous matrices fast. The true complexity of matrix multiplication (naively $O(n^3)$,
+$O(n^{2.81})$ via Strassen) remains a famous open problem.
+\end{remark}
+\end{frame}
+
+\begin{frame}{Rank: the payoff at the end}
+Towards the end of the chapter: \emph{elementary operations}, \emph{echelon form}, and \emph{rank}.
+
+\pause
+
+\begin{remark}
+Rank measures the genuine information content of a matrix: a $1000\times 1000$ matrix of rank $20$ is
+reconstructed from $\sim 40\,000$ numbers instead of a million. Row reduction — computing the rank — is the
+same engine that solves systems of equations and inverts matrices in the chapters ahead.
+\end{remark}
+\end{frame}
+
+\section{Matrices}
+
+\begin{frame}{Definition}
+\begin{definition}
+An \emph{$m\times n$ matrix over $\K$} is a rectangular table $(a_{ij})_{m\times n}$, $a_{ij}\in\K$. Two
+matrices are \emph{equal} if same size, same entries.
+\end{definition}
+
+\pause
+
+\begin{example}
+$\left(\begin{smallmatrix} 1 & 0 & 2\\ -3 & \tfrac12 & 4 \end{smallmatrix}\right)$ is $2\times 3$ over $\R$.
+Its rows are $(1,0,2)$, $(-3,\tfrac12,4)$; its columns are the three column vectors.
+\end{example}
+
+\pause
+
+\begin{fact}
+The rows of an $m\times n$ matrix live in $\K^n$; the columns live in $\K^m$.
+\end{fact}
+\end{frame}
+
+\begin{frame}{Special shapes}
+\begin{definition}
+A matrix is \emph{square} if $m=n$; \emph{symmetric} if $a_{ij}=a_{ji}$; \emph{diagonal} if $a_{ij}=0$ for
+$i\neq j$; \emph{upper} (\emph{lower}) \emph{triangular} if all entries below (above) the diagonal vanish.
+\end{definition}
+
+\pause
+
+\begin{example}
+$\left(\begin{smallmatrix} 2 & 0\\ 0 & -1 \end{smallmatrix}\right)$ is diagonal;
+$\left(\begin{smallmatrix} 1 & 5 & 0\\ 0 & 2 & -1\\ 0 & 0 & 3 \end{smallmatrix}\right)$ is upper triangular.
+Every diagonal matrix is both.
+\end{example}
+\end{frame}
+
+\section{Matrix operations}
+
+\begin{frame}{Addition and scaling}
+\begin{definition}
+$A+B = (a_{ij}+b_{ij})$ for same-size $A,B$; $\ k\cdot A = (k\,a_{ij})$.
+\end{definition}
+
+\pause
+
+\begin{steps}
+\step[addition, entrywise]{\left(\begin{smallmatrix} 1 & 0 & 2\\ -3 & \frac12 & 4\end{smallmatrix}\right) + \left(\begin{smallmatrix} -3 & 1 & 4\\ 2 & \frac32 & 0\end{smallmatrix}\right) = \left(\begin{smallmatrix} -2 & 1 & 6\\ -1 & 2 & 4\end{smallmatrix}\right)}
+\end{steps}
+
+\pause
+
+\begin{warning}
+Addition of matrices of \emph{different} sizes is not defined.
+\end{warning}
+\end{frame}
+
+\begin{frame}{Properties (nothing surprising)}
+\begin{theorem}
+For $m\times n$ matrices $A,B,C$ and scalars $k_1,k_2$:
+\[
+A+0=A, \quad (A+B)+C=A+(B+C), \quad A+B=B+A, \quad k_1(A+B)=k_1A+k_1B, \quad (k_1+k_2)A=k_1A+k_2A.
+\]
+\end{theorem}
+\end{frame}
+
+\begin{frame}{Matrix multiplication}
+\begin{definition}
+For a $k\times m$ matrix $A$ and $m\times n$ matrix $B$, $A\cdot B$ is $k\times n$ with
+\[
+c_{ij} = a_{i1}b_{1j}+a_{i2}b_{2j}+\ldots+a_{im}b_{mj}.
+\]
+\end{definition}
+
+\pause
+
+\begin{warning}
+Defined \emph{only} when the number of columns of $A$ equals the number of rows of $B$.
+\end{warning}
+
+\pause
+
+Watch the row of $A$ sweep across the column of $B$ — step through every entry of the product.
+
+\widget{MatMul}{a="1 0 2; 2 1 3", b="1 2; 0 1; 1 0"}
+\end{frame}
+
+\begin{frame}{Order matters}
+\begin{example}
+For the $A,B$ above, $A\cdot B$ is $2\times 2$ but $B\cdot A$ is $3\times 3$ — they need not even have the
+same size, let alone be equal.
+\end{example}
+
+\pause
+
+\begin{remark}[Matrix--vector products]
+For $\vv\in\K^n$: $A\vv = x_1\cdot(\text{col}_1 A) + \ldots + x_n\cdot(\text{col}_n A)$ — the linear
+combination of the columns of $A$, weighted by the entries of $\vv$. Used repeatedly from here on.
+\end{remark}
+\end{frame}
+
+\begin{frame}{Any field works, including finite ones}
+\begin{remark}
+All of matrix algebra — row reduction, rank, systems, determinants, inverses — works verbatim over
+\emph{any} field, including finite fields $\Z_p$. One simply reduces modulo $p$ at every step.
+\end{remark}
+
+\pause
+
+\begin{example}
+Over $\Z_5$:
+\[
+\left(\begin{smallmatrix} 2 & 3\\ 4 & 1 \end{smallmatrix}\right)
+\left(\begin{smallmatrix} 1 & 4\\ 2 & 3 \end{smallmatrix}\right)
+= \left(\begin{smallmatrix} 8 & 17\\ 6 & 19 \end{smallmatrix}\right)
+= \left(\begin{smallmatrix} 3 & 2\\ 1 & 4 \end{smallmatrix}\right) \pmod 5.
+\]
+\end{example}
+\end{frame}
+
+\begin{frame}{Identity, and properties of multiplication}
+\begin{definition}
+$I_{n\times n}$ has $1$'s on the diagonal, $0$ elsewhere.
+\end{definition}
+
+\pause
+
+\begin{theorem}
+$(AB)C=A(BC)$, \quad $AI=IA=A$, \quad $(A+A_1)B=AB+A_1B$, \quad $A(B+B_1)=AB+AB_1$.
+\end{theorem}
+
+\pause
+
+\begin{warning}
+Multiplication is in general \emph{not commutative}:
+\[
+\left(\begin{smallmatrix} 0&1\\0&0\end{smallmatrix}\right)\left(\begin{smallmatrix} 0&0\\1&0\end{smallmatrix}\right) = \left(\begin{smallmatrix} 1&0\\0&0\end{smallmatrix}\right)
+\quad\neq\quad
+\left(\begin{smallmatrix} 0&0\\1&0\end{smallmatrix}\right)\left(\begin{smallmatrix} 0&1\\0&0\end{smallmatrix}\right) = \left(\begin{smallmatrix} 0&0\\0&1\end{smallmatrix}\right).
+\]
+\end{warning}
+\end{frame}
+
+\begin{frame}{Zero products and no cancellation}
+\begin{warning}
+A product of two non-zero matrices can be zero: $A=\left(\begin{smallmatrix} 0&1\\0&0\end{smallmatrix}\right)\neq 0$
+but $A\cdot A=0$. Consequently $AB=AC$ does \emph{not} imply $B=C$.
+\end{warning}
+
+\pause
+
+\begin{definition}[Powers]
+$A^0=I$, $A^k=A^{k-1}\cdot A$. Associativity gives $A^kA^l=A^{k+l}$, $(A^k)^l=A^{kl}$.
+\end{definition}
+
+\pause
+
+\begin{example}[Counting walks]
+For an adjacency matrix $A$, the $ij$-entry of $A^k$ counts walks of length $k$ from $i$ to $j$: for $k=2$,
+$\sum_m a_{im}a_{mj}$ counts intermediate nodes $m$ with $i\to m\to j$.
+\end{example}
+\end{frame}
+
+\begin{frame}{Transpose}
+\begin{definition}
+$A^T$ swaps rows and columns of $A$.
+\end{definition}
+
+\pause
+
+\begin{fact}
+$A$ is symmetric iff $A^T=A$.
+\end{fact}
+
+\pause
+
+\begin{theorem}
+$(A+B)^T=A^T+B^T$, \quad $(A^T)^T=A$, \quad $(kA)^T=kA^T$, \quad $(AB)^T = B^T A^T$ — order reversed.
+\end{theorem}
+\end{frame}
+
+\section{Elementary operations}
+
+\begin{frame}{Row operations}
+\begin{definition}
+\emph{Elementary row operations}:
+\begin{enumerate}
+\item switch rows $i,j$ \quad ($R_i\leftrightarrow R_j$);
+\item scale row $i$ by nonzero $k$ \quad ($kR_i\to R_i$);
+\item add a multiple of row $j$ to row $i$ \quad ($R_i+kR_j\to R_i$).
+\end{enumerate}
+\end{definition}
+
+\pause
+
+\begin{theorem}
+Each operation is invertible by an operation of the same type: swap by swap, scale by $\tfrac1k$, add by
+subtract.
+\end{theorem}
+
+\pause
+
+\begin{definition}
+$A,B$ are \emph{row equivalent} if one is reached from the other by such operations.
+\end{definition}
+\end{frame}
+
+\section{Row echelon form and rank}
+
+\begin{frame}{Echelon form}
+\begin{definition}
+$A$ is in \emph{row echelon form} if all zero rows sit at the bottom, and each row's leading (first nonzero)
+entry lies right of the one above it.
+\end{definition}
+
+\pause
+
+\begin{fact}
+Every matrix is row equivalent to one in row echelon form.
+\end{fact}
+
+\pause
+
+\begin{steps}
+\step[start]{\left(\begin{smallmatrix}1&0&2\\2&-1&3\\4&1&8\end{smallmatrix}\right)}
+\step[R2 - 2R1]{\left(\begin{smallmatrix}1&0&2\\0&-1&-1\\4&1&8\end{smallmatrix}\right)}
+\step[R3 - 4R1]{\left(\begin{smallmatrix}1&0&2\\0&-1&-1\\0&1&0\end{smallmatrix}\right)}
+\step[R3 + R2 — echelon form]{\left(\begin{smallmatrix}1&0&2\\0&-1&-1\\0&0&-1\end{smallmatrix}\right)}
+\end{steps}
+\end{frame}
+
+\begin{frame}{Rank}
+\begin{definition}
+\emph{Row rank}: $\dim$ of the row span in $\K^n$. \emph{Column rank}: $\dim$ of the column span in $\K^m$.
+\end{definition}
+
+\pause
+
+\begin{theorem}
+Row rank $=$ column rank, for every matrix. Call this common value $\rank(A)$.
+\end{theorem}
+
+\pause
+
+\begin{fact}
+$\rank(A)=\rank(A^T)$ and $\rank(A)\leq\min(m,n)$.
+\end{fact}
+\end{frame}
+
+\begin{frame}{Computing rank by row reduction}
+\begin{theorem}
+Row equivalent matrices have equal rank, and the number of nonzero rows of an echelon form of $A$ equals
+$\rank(A)$.
+\end{theorem}
+
+\pause
+
+\begin{steps}
+\step[a 3x4 matrix]{\left(\begin{smallmatrix}1&2&1&0\\2&4&3&1\\3&6&4&1\end{smallmatrix}\right)}
+\step[R2-2R1, R3-3R1]{\left(\begin{smallmatrix}1&2&1&0\\0&0&1&1\\0&0&1&1\end{smallmatrix}\right)}
+\step[R3-R2: two nonzero rows]{\left(\begin{smallmatrix}1&2&1&0\\0&0&1&1\\0&0&0&0\end{smallmatrix}\right) \implies \rank(A)=2}
+\end{steps}
+\end{frame}
+
+\begin{frame}{Rank of a span}
+\begin{theorem}
+$\dim\Span{\{\vv_1,\ldots,\vv_m\}}$ in $\K^n$ equals $\rank$ of the matrix with rows $\vv_1,\ldots,\vv_m$.
+\end{theorem}
+
+\pause
+
+\begin{example}
+$\Span{\{(1,2,1),(2,4,3),(3,6,4)\}}$: row reduce
+$\left(\begin{smallmatrix}1&2&1\\2&4&3\\3&6&4\end{smallmatrix}\right) \to \left(\begin{smallmatrix}1&2&1\\0&0&1\\0&0&0\end{smallmatrix}\right)$
+— dimension $2$, and $(1,2,1),(0,0,1)$ form a basis of the span.
+\end{example}
+\end{frame}
+
+\begin{frame}{Summary}
+\begin{itemize}
+\item A matrix packages rows and columns of a field; multiplication is row-times-column.
+\pause
+\item Multiplication is associative but \emph{not} commutative; zero products can hide non-zero factors.
+\pause
+\item Elementary row operations preserve rank, and reduce any matrix to echelon form.
+\pause
+\item $\rank(A)$ = number of nonzero echelon rows = the honest dimension hidden inside $A$.
+\pause
+\item \textbf{Next lecture:} systems of linear equations — the algorithm behind the rank computation itself.
+\end{itemize}
+\end{frame}

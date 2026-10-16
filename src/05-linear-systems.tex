@@ -1,0 +1,267 @@
+% Lecture 5 — Systems of linear equations
+% Compiled to web slides by tools/tex2slides.mjs
+
+\lecture{Systems of linear equations}{Linear Algebra · Warsaw University of Technology}{Lecture 5 · Tomasz Brengos}
+
+\section{Motivation}
+
+\begin{frame}{The oldest problem in linear algebra}
+Chinese mathematicians were row reducing two thousand years ago. Measured in CPU-hours, solving linear
+systems may be the computation the world performs most.
+
+\pause
+
+\begin{itemize}
+\item \textbf{GPS.} Your position solves a small linear system from satellite distances — several times a second.
+\pause
+\item \textbf{Graphics and game physics.} Ray–surface intersections and toppling crates: thousands of
+linear systems per frame.
+\pause
+\item \textbf{Electronics.} Kirchhoff's laws turn a circuit into a linear system; SPICE is a linear-system
+solver at heart.
+\pause
+\item \textbf{Medical imaging.} A CT scan reconstructs tissue densities by solving one huge linear system.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Gaussian elimination}
+This chapter presents \emph{Gaussian elimination} — provably correct, fast ($\sim\tfrac23 n^3$ operations),
+and universal.
+
+\pause
+
+\begin{remark}
+A linear system has no solution, exactly one, or infinitely many — never, say, exactly two. The
+Kronecker--Capelli theorem decides which by comparing two ranks. In the infinite case, solutions organise
+as one particular solution plus a \emph{subspace} — the abstract theory of the previous chapters paying
+off directly.
+\end{remark}
+\end{frame}
+
+\section{Systems of linear equations}
+
+\begin{frame}{Definition}
+\begin{definition}
+A \emph{system of $m$ linear equations in $n$ unknowns} $x_1,\ldots,x_n$:
+\[
+a_{11}x_1+\ldots+a_{1n}x_n = b_1, \ \ldots, \ a_{m1}x_1+\ldots+a_{mn}x_n=b_m, \qquad a_{ij},b_i\in\K.
+\]
+\end{definition}
+
+\pause
+
+\begin{example}
+$\{\,3x+y+z=1,\ x+y=0\,\}$ has two equations, three unknowns; $(0,0,1)$ and $(-1,1,3)$ both solve it. By
+contrast $\{\,x+y=1,\ x+y=0\,\}$ has \emph{no} solution — it forces $0=1$.
+\end{example}
+\end{frame}
+
+\begin{frame}{Matrix form}
+\begin{observation}
+$AX=B$, where
+\[
+A = \left(\begin{smallmatrix} a_{11}&\ldots&a_{1n}\\ \vdots&&\vdots\\ a_{m1}&\ldots&a_{mn}\end{smallmatrix}\right), \quad
+X = \left(\begin{smallmatrix} x_1\\ \vdots\\ x_n\end{smallmatrix}\right), \quad
+B = \left(\begin{smallmatrix} b_1\\ \vdots\\ b_m\end{smallmatrix}\right).
+\]
+\end{observation}
+
+\pause
+
+\begin{definition}
+Two systems are \emph{equivalent} if they have the same solution set. The \emph{augmented matrix}
+$(A\mid B)$ packages a system into a single matrix.
+\end{definition}
+
+\pause
+
+\begin{theorem}
+$A_1X=B_1$ and $A_2X=B_2$ are equivalent iff $(A_1\mid B_1)$ and $(A_2\mid B_2)$ are row equivalent.
+\end{theorem}
+\end{frame}
+
+\section{Solving systems}
+
+\begin{frame}{Gaussian elimination, the recipe}
+\begin{theorem}
+To solve $AX=B$: write $(A\mid B)$; row reduce to echelon form $(A'\mid B')$; read off solutions of
+$A'X=B'$ from the bottom equation up (\emph{back substitution}).
+\end{theorem}
+
+\pause
+
+\begin{definition}
+In an echelon system, unknowns multiplying leading entries are \emph{leading variables}; the rest are
+\emph{free variables}, assigned arbitrary parameters.
+\end{definition}
+\end{frame}
+
+\begin{frame}{A unique solution}
+\begin{steps}
+\step[augmented matrix]{\left(\begin{smallmatrix} 2&4&-1&11\\-4&-3&3&20\\2&4&2&2 \end{smallmatrix}\right)}
+\step[row reduce to echelon form]{\left(\begin{smallmatrix} 2&4&-1&11\\0&5&1&2\\0&0&3&-9 \end{smallmatrix}\right)}
+\step[back substitute: 3z=-9]{z=-3}
+\step[then 5y+z=2]{y=1}
+\step[then 2x+4y-z=11]{x=2}
+\end{steps}
+\end{frame}
+
+\begin{frame}{Infinitely many solutions}
+\begin{steps}
+\step[augmented matrix, 2 eqns, 4 unknowns]{\left(\begin{smallmatrix} 1&4&-3&2&5\\2&8&-5&0&12 \end{smallmatrix}\right)}
+\step[echelon form]{\left(\begin{smallmatrix} 1&4&-3&2&5\\0&0&1&-4&2 \end{smallmatrix}\right)}
+\step[y,t free — set y=a, t=b]{z=2+4b, \qquad x=11-4a+10b}
+\end{steps}
+
+\pause
+
+The solution depends on two free parameters $a,b$.
+\end{frame}
+
+\begin{frame}{No solution}
+\begin{steps}
+\step[augmented matrix]{\left(\begin{smallmatrix} 2&4&0\\2&4&1 \end{smallmatrix}\right)}
+\step[R2 - R1: the bottom row reads 0 = 1]{\left(\begin{smallmatrix} 2&4&0\\0&0&1 \end{smallmatrix}\right)}
+\end{steps}
+
+\pause
+
+No solutions. This is the geometric picture of a $2\times 2$ system: two lines in the plane, either
+crossing once, never, or coinciding.
+
+\pause
+
+\widget{TwoLines}{}
+\end{frame}
+
+\begin{frame}{Kronecker--Capelli}
+\begin{theorem}
+$AX=B$ has a solution iff $\rank(A)=\rank(A\mid B)$.
+\end{theorem}
+
+\pause
+
+\begin{corollary}
+For a solvable system with $n$ unknowns and $r=\rank(A)$: if $r=n$, exactly one solution; if $r<n$, $n-r$
+free parameters — infinitely many solutions over $\R$ or $\C$, exactly $p^{n-r}$ over $\Z_p$.
+\end{corollary}
+\end{frame}
+
+\begin{frame}{A system with a parameter}
+For which $p\in\R$ does $\{\,x+y+z=1,\ x+2y+3z=2,\ 2x+3y+4z=p\,\}$ have solutions?
+
+\pause
+
+\begin{steps}
+\step[row reduce]{\left(\begin{smallmatrix}1&1&1&1\\1&2&3&2\\2&3&4&p\end{smallmatrix}\right) \to \left(\begin{smallmatrix}1&1&1&1\\0&1&2&1\\0&1&2&p-2\end{smallmatrix}\right)}
+\step[R3-R2: bottom row is 0 = p-3]{\left(\begin{smallmatrix}1&1&1&1\\0&1&2&1\\0&0&0&p-3\end{smallmatrix}\right)}
+\end{steps}
+
+\pause
+
+If $p\neq 3$: no solutions ($\rank(A)=2 < 3 = \rank(A\mid B)$). If $p=3$: infinitely many, $z=a$,
+$y=1-2a$, $x=a$.
+\end{frame}
+
+\section{Homogeneous systems}
+
+\begin{frame}{Always at least one solution}
+\begin{definition}
+A system is \emph{homogeneous} if it has the form $AX=\0$; it always has the trivial solution $X=\0$. Any
+other solution is \emph{non-trivial}.
+\end{definition}
+
+\pause
+
+\begin{fact}
+A homogeneous system with $m<n$ (fewer equations than unknowns) always has a non-trivial solution: after
+row reduction, $\rank(A)\leq m<n$ leaves at least one free variable.
+\end{fact}
+\end{frame}
+
+\begin{frame}{Two contrasting examples}
+\begin{example}
+$\{x+y-z=0,\ 2x-3y+z=0,\ x-4y+2z=0\}$ reduces to $\{x+y-z=0,\ -5y+3z=0\}$: setting $z=a$ gives
+$y=\tfrac35 a$, $x=\tfrac25 a$ — a non-trivial solution.
+\end{example}
+
+\pause
+
+\begin{example}
+$\{x+y-z=0,\ 2x+4y-z=0,\ 3x+2y+2z=0\}$ reduces to $\{x+y-z=0,\ 2y+z=0,\ 11z=0\}$: only the trivial solution
+$x=y=z=0$.
+\end{example}
+\end{frame}
+
+\begin{frame}{The solution space}
+\begin{theorem}
+$W=\{\vv\in\K^n\mid A\vv=\0\}$ is a subspace of $\K^n$, and $\dim(W)=n-\rank(A)$.
+\end{theorem}
+
+\pause
+
+\begin{proof}
+$A(\vv_1+\vv_2)=A\vv_1+A\vv_2=\0$ and $A(k\vv_1)=kA\vv_1=\0$: closure under $+$ and scaling.
+\end{proof}
+
+\pause
+
+\begin{remark}
+Visible in the algorithm: elimination leaves $\rank(A)$ leading and $n-\rank(A)$ free variables; setting one
+free variable to $1$ and the rest to $0$ produces a basis of $W$.
+\end{remark}
+\end{frame}
+
+\begin{frame}{Building a basis of the solution space}
+For $\{x+2y+3z=0,\ -2x-4y-6z=0\}$, which reduces to the single equation $x+2y+3z=0$:
+
+\pause
+
+\begin{steps}
+\step[free variables y=a, z=b]{\left(\begin{smallmatrix}x\\y\\z\end{smallmatrix}\right) = \left(\begin{smallmatrix}-2a-3b\\a\\b\end{smallmatrix}\right)}
+\step[(a,b)=(1,0) and (0,1) give a basis]{\left(\begin{smallmatrix}-2\\1\\0\end{smallmatrix}\right), \quad \left(\begin{smallmatrix}-3\\0\\1\end{smallmatrix}\right)}
+\end{steps}
+\end{frame}
+
+\section{Homogeneous and non-homogeneous}
+
+\begin{frame}{Particular solution plus the homogeneous space}
+\begin{theorem}
+For $AX=B$ with solution set $U$ and any particular solution $\vv_0\in U$:
+\[
+U = \vv_0 + W = \{\vv_0+\ww \mid \ww\in W\},
+\]
+where $W$ solves the associated homogeneous system $AX=\0$.
+\end{theorem}
+
+\pause
+
+\begin{proof}
+$A(\vv_0+\ww)=A\vv_0+A\ww=B+\0=B$, so $\vv_0+W\subseteq U$. Conversely if $A\vv=B$, put $\ww=\vv-\vv_0$:
+$A\ww=B-B=\0$, so $\vv=\vv_0+\ww\in\vv_0+W$.
+\end{proof}
+\end{frame}
+
+\begin{frame}{Example}
+\begin{example}
+$x+2y+3z=6$: a particular solution $\vv_0=(1,1,1)$; the homogeneous space
+$W=\Span{\{(-2,1,0),\,(-3,0,1)\}}$. Every solution is
+\[
+(1,1,1) + a(-2,1,0) + b(-3,0,1), \qquad a,b\in\R.
+\]
+\end{example}
+\end{frame}
+
+\begin{frame}{Summary}
+\begin{itemize}
+\item Every system $AX=B$ reduces, via elementary row operations, to echelon form.
+\pause
+\item Kronecker--Capelli: solvable iff $\rank(A)=\rank(A\mid B)$; then $n-r$ free parameters.
+\pause
+\item Homogeneous solution sets are subspaces of dimension $n-\rank(A)$.
+\pause
+\item General solutions are a particular solution plus that subspace.
+\pause
+\item \textbf{Next lecture:} the determinant — a single number that tests solvability at a glance.
+\end{itemize}
+\end{frame}

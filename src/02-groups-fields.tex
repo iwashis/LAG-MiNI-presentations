@@ -1,0 +1,354 @@
+% Lecture 2 — Groups and fields
+% Compiled to web slides by tools/tex2slides.mjs
+
+\lecture{Groups and fields}{Linear Algebra · Warsaw University of Technology}{Lecture 2 · Tomasz Brengos}
+
+\section{Motivation}
+
+\begin{frame}{An impossible-sounding problem}
+Every time your browser shows a padlock, this just happened:
+
+\pause
+
+Two computers that have \emph{never met} agree on a secret key —
+while every message between them travels through wires and routers
+that anyone can read.
+
+\pause
+
+\begin{warning}
+Whisper a secret across a crowded room, in plain voice, so that everyone
+hears every word — yet only the two of you learn the secret. That is the
+requirement.
+\end{warning}
+
+\pause
+
+It is solved billions of times a day. The solution is not locks or
+wires — it is \emph{algebra}: arithmetic in a finite group.
+\note{The padlock hook. Emphasise: no shared secret beforehand, public channel only.}
+\end{frame}
+
+\begin{frame}{Diffie--Hellman, with real numbers (1976)}
+Everything in \textbf{bold} is public. Alice keeps $a = 6$ secret,
+Bob keeps $b = 15$ secret.
+
+\begin{steps}
+\step[public agreement, everyone sees it]{\textbf{p = 23}, \qquad \textbf{g = 5}}
+\step[Alice sends her mix — the exponent stays hidden]{A = g^a \bmod p = 5^6 \bmod 23 = \textbf{8}}
+\step[Bob sends his mix]{B = g^b \bmod p = 5^{15} \bmod 23 = \textbf{19}}
+\step[each raises the other's mix to their own secret]{B^a \equiv g^{ba} = g^{ab} \equiv A^b \equiv 2 \pmod{23}}
+\end{steps}
+
+\pause
+
+Both arrive at the shared secret $2$. The eavesdropper holds $23, 5, 8, 19$ —
+and recovering $a$ from $8 = 5^a \bmod 23$ is the \emph{discrete logarithm
+problem}: easy to state, and (for a 600-digit $p$) believed to be hopelessly
+hard. The entire padlock rests on that asymmetry.
+\end{frame}
+
+\begin{frame}{The algebra your day already used}
+\begin{itemize}
+\item \textbf{Key exchange and RSA} — arithmetic modulo a prime: the finite
+groups and fields of this lecture.
+\pause
+\item \textbf{QR codes, Wi-Fi, scratched CDs} — Reed--Solomon error correction
+and the AES cipher compute in a field with $256$ elements.
+\pause
+\item \textbf{Every single bit} — $\{0,1\}$ with XOR and AND is the smallest
+field of all. Hashing, checksums and cryptanalysis are linear algebra over it.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Programming against an interface}
+An \emph{interface} declares which operations a type must support and which
+laws they must obey — and code written against the interface runs on
+\emph{every} implementation.
+
+\pause
+
+This lecture does exactly that to arithmetic:
+
+\begin{itemize}
+\item a \emph{group} — one operation, three laws;
+\item a \emph{field} — two operations, tied by distributivity.
+\end{itemize}
+
+\pause
+
+\begin{remark}
+Every theorem proved from the axioms alone is proved \emph{once} — for
+$\R$, for $\C$, for residues modulo a prime, for invertible matrices.
+And fields are precisely the \emph{scalars} over which the whole course
+is built: vector spaces, matrices, determinants, eigenvalues.
+\end{remark}
+\end{frame}
+
+\section{Groups}
+
+\begin{frame}{Definition}
+\begin{definition}
+A \emph{group} is a set $G$ with a binary operation $*\colon G\times G\to G$
+such that:
+\begin{itemize}
+\item $(a*b)*c = a*(b*c)$ \hfill (associativity)
+\item there is $e\in G$ with $a*e = e*a = a$ for all $a$ \hfill (identity)
+\item every $a\in G$ has $a^{-1}\in G$ with $a*a^{-1} = a^{-1}*a = e$ \hfill (inverses)
+\end{itemize}
+If moreover $a*b = b*a$ for all $a,b$, the group is \emph{abelian}.
+\end{definition}
+
+\pause
+
+\begin{remark}
+Additive notation: operation $+$, identity $0$, inverse $-a$.
+Multiplicative notation: operation $\cdot$, identity $1$, inverse $a^{-1}$.
+\end{remark}
+\end{frame}
+
+\begin{frame}{Modular arithmetic}
+\begin{definition}
+For a positive integer $n$, $\ a \bmod n$ is the remainder of dividing $a$
+by $n$: the unique $r \in \{0, 1, \ldots, n-1\}$ with $a = qn + r$.
+On $\Z_n = \{0, 1, \ldots, n-1\}$ we define
+\[
+a +_n b = (a+b) \bmod n, \qquad a \cdot_n b = (a \cdot b) \bmod n.
+\]
+\end{definition}
+
+\pause
+
+\begin{example}
+$17 \bmod 4 = 1$, \quad $4 \bmod 17 = 4$, \quad $(-2) \bmod 5 = 3$
+(the remainder is always in $\{0,\ldots,n-1\}$).
+In $\Z_6$: \ $4 +_6 5 = 3$ and $4 \cdot_6 5 = 2$.
+\end{example}
+
+\pause
+
+This is clock arithmetic — hour $9$ plus $5$ hours is hour $2$ — and it is
+the arithmetic Diffie--Hellman ran on.
+\end{frame}
+
+\begin{frame}{A zoo of groups}
+\begin{itemize}
+\item $(\Z, +)$, $(\Q, +)$, $(\R, +)$, $(\C, +)$ — abelian; identity $0$,
+inverse $-a$.
+\pause
+\item $(\Q\setminus\{0\}, \cdot)$, $(\R\setminus\{0\}, \cdot)$,
+$(\C\setminus\{0\}, \cdot)$ — abelian; identity $1$, inverse $\tfrac1a$.
+\pause
+\item $(\Z, \cdot)$ is \emph{not} a group: apart from $\pm 1$, no integer has
+an integer reciprocal.
+\pause
+\item $(\Z_n, +_n)$ — a finite abelian group: the inverse of $a$ is $n - a$.
+\pause
+\item Invertible $2\times 2$ matrices under multiplication (Lecture 4) — a
+group that is \emph{not} abelian.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Finite multiplicative groups}
+For a prime $p$, the non-zero residues $\Z_p \setminus \{0\}$ form a group
+under $\cdot_p$ — the group where Diffie--Hellman lives.
+
+\pause
+
+Inverses let us solve equations exactly as in $\R$. In $\Z_7$, solve
+$2 \cdot_7 x = 5$:
+
+\begin{steps}
+\step[find the inverse of 2]{2 \cdot_7 4 = 8 \bmod 7 = 1, \qquad \text{so } 2^{-1} = 4}
+\step[multiply both sides by it]{x = 4 \cdot_7 5 = 20 \bmod 7 = 6}
+\step[check]{2 \cdot_7 6 = 12 \bmod 7 = 5 \checkmark}
+\end{steps}
+\end{frame}
+
+\begin{frame}{Roots of unity revisited}
+\begin{columns}
+\column
+The $n$-th roots of unity from Lecture 1,
+\[
+U_n = \left\{ \cos\tfrac{2k\pi}{n} + i \sin\tfrac{2k\pi}{n} \right\},
+\]
+form an abelian group under multiplication: arguments add, so the product of
+two roots is again a root.
+
+Identity: $1$. Inverse: the conjugate.
+
+\pause
+
+Multiplying the roots adds the exponents $k$ modulo $n$ — the group $U_n$
+\emph{is} $(\Z_n, +_n)$ wearing a geometric costume.
+\column
+\widget{RootsOfUnity}{n=6}
+\end{columns}
+\end{frame}
+
+\begin{frame}{First theorems from the axioms alone}
+\begin{fact}
+In any group the identity is unique, and each element has exactly one inverse.
+\end{fact}
+
+\begin{steps}
+\step[two identities e and e — prime]{e = e * e' = e'}
+\step[two inverses b and b — prime — of a]{b = b * e = b * (a * b')}
+\step[associativity finishes it]{= (b * a) * b' = e * b' = b'}
+\end{steps}
+
+\pause
+
+\begin{fact}
+Cancellation: $a * b = a * c$ implies $b = c$ (multiply by $a^{-1}$ on the
+left). These proofs used nothing but the three axioms — so they hold in
+\emph{every} group in the zoo, matrices included.
+\end{fact}
+\end{frame}
+
+\section{Fields}
+
+\begin{frame}{Definition}
+\begin{definition}
+A \emph{field} is a set $\K$ with two operations $+$ and $\cdot$ such that:
+\begin{itemize}
+\item $(\K, +)$ is an abelian group with identity $0$;
+\item $(\K \setminus \{0\}, \cdot)$ is an abelian group with identity $1$;
+\item multiplication distributes over addition: $(a+b)\cdot c = a\cdot c + b\cdot c$.
+\end{itemize}
+\end{definition}
+
+\pause
+
+Subtraction and division come for free: $a - b = a + (-b)$ and
+$\tfrac{a}{b} = a \cdot \tfrac1b$ for $b \neq 0$. All four operations,
+with all the usual rules.
+
+\pause
+
+\begin{example}
+$\Q$, $\R$ and $\C$ are fields. $\Z$ is \emph{not}: $2$ has no integer
+reciprocal.
+\end{example}
+\end{frame}
+
+\begin{frame}{First consequences}
+\begin{fact}
+In any field: $a \cdot 0 = 0$, \quad $(-1)\cdot a = -a$, \quad and there are
+\emph{no zero divisors}:
+\[
+a \cdot b = 0 \implies a = 0 \ \text{ or } \ b = 0.
+\]
+\end{fact}
+
+\pause
+
+\begin{steps}
+\step[suppose ab = 0 and a is nonzero]{b = 1 \cdot b = \left( \tfrac1a \cdot a \right) \cdot b}
+\step[associativity, then the first fact]{= \tfrac1a \cdot (a \cdot b) = \tfrac1a \cdot 0 = 0}
+\end{steps}
+
+\pause
+
+No zero divisors is exactly what makes cancellation — and solving
+equations — possible.
+\end{frame}
+
+\begin{frame}{The multiplication table decides everything}
+\begin{columns}
+\column
+Is $\Z_n$ a field? The table answers.
+
+An element $a$ is \emph{invertible} exactly when a $1$ appears in its row —
+highlighted below.
+
+\textbf{Try it:} set $n = 5$, then $n = 4$. Watch the row of $2$: modulo $4$
+it reads $0, 2, 0, 2$ — no $1$, ever. And $2 \cdot_4 2 = 0$: a zero divisor.
+
+Switch to $+$: \emph{every} $\Z_n$ is a group under addition.
+\column
+\widget{ModTable}{n=5, op=mul}
+\end{columns}
+\end{frame}
+
+\begin{frame}{When is it a field?}
+\begin{theorem}
+$\Z_n$ is a field \ if and only if \ $n$ is a prime number.
+\end{theorem}
+
+\pause
+
+\begin{steps}
+\step[composite n gives zero divisors]{n = a \cdot b, \quad 1 < a, b < n \implies a \cdot_n b = 0}
+\step[prime p: the row of a has no zeros and no repeats]{a \cdot_p x = a \cdot_p y \implies p \mid a(x - y) \implies x = y}
+\step[n minus 1 distinct non-zero products must fill the row]{\{ a \cdot_p 1, \ldots, a \cdot_p (p-1) \} = \{1, \ldots, p-1\} \ni 1}
+\end{steps}
+
+\pause
+
+\begin{remark}
+The proof shows an inverse \emph{exists} without finding it. In practice
+inverses modulo $p$ are computed by the extended Euclidean algorithm — a
+staple of every crypto library.
+\end{remark}
+\end{frame}
+
+\begin{frame}{The smallest field: a single bit}
+\begin{example}
+$\Z_2 = \{0, 1\}$ with the tables
+\[
+\begin{array}{c|cc} + & 0 & 1 \\ \hline 0 & 0 & 1 \\ 1 & 1 & 0 \end{array}
+\qquad\qquad
+\begin{array}{c|cc} \cdot & 0 & 1 \\ \hline 0 & 0 & 0 \\ 1 & 0 & 1 \end{array}
+\]
+is a field — the smallest one.
+\end{example}
+
+\pause
+
+Read the tables again: addition is the \textbf{XOR} gate, multiplication is
+the \textbf{AND} gate. A bit is not a metaphor for a field element —
+it \emph{is} one.
+
+\pause
+
+\begin{remark}
+Linear algebra over $\Z_2$ powers checksums, hashing, error-correcting codes
+and cryptanalysis. AES and QR codes use its big sibling: a field with
+$2^8 = 256$ elements, one per byte.
+\end{remark}
+\end{frame}
+
+\begin{frame}{A field between the rationals and the reals}
+\begin{example}
+$\Q(\sqrt2) = \{ a + b\sqrt2 \mid a, b \in \Q \}$ is a field.
+\end{example}
+
+The only doubtful axiom is the reciprocal — and the trick is the one that
+worked for complex numbers:
+
+\begin{steps}
+\step[multiply by the conjugate]{\frac{1}{a + b\sqrt2} = \frac{a - b\sqrt2}{(a + b\sqrt2)(a - b\sqrt2)}}
+\step[the denominator is rational]{= \frac{a}{a^2 - 2b^2} - \frac{b}{a^2 - 2b^2}\,\sqrt2}
+\step[and nonzero, because sqrt 2 is irrational]{a^2 - 2b^2 \neq 0 \ \text{ for } (a,b) \neq (0,0)}
+\end{steps}
+\end{frame}
+
+\begin{frame}{Summary}
+\begin{itemize}
+\item A \textbf{group}: one operation, three laws — associativity, identity,
+inverses. Proofs from the axioms hold for every implementation at once.
+\pause
+\item \textbf{Modular arithmetic}: $\Z_n$ is always an additive group;
+its non-zero part is a multiplicative group exactly for prime $n$.
+\pause
+\item A \textbf{field}: two intertwined abelian groups — $\Q$, $\R$, $\C$,
+$\Z_p$, $\Q(\sqrt2)$, and the single bit $\Z_2$.
+\pause
+\item Cryptography, error correction and your Wi-Fi all compute in finite
+groups and fields — this is applied mathematics at planetary scale.
+\pause
+\item \textbf{Next lecture:} vector spaces — where fields become the
+\emph{scalars} and linear algebra properly begins.
+\end{itemize}
+\end{frame}

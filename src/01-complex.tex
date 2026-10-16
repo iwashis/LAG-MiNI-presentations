@@ -1,0 +1,426 @@
+% Lecture 1 — Complex numbers
+% Compiled to web slides by tools/tex2slides.mjs
+
+\lecture{Complex numbers}{Linear Algebra · Warsaw University of Technology}{Lecture 1 · Tomasz Brengos}
+
+\section{Motivation}
+
+\begin{frame}{A problem with no real solution}
+The equation
+\[
+x^2 + 1 = 0
+\]
+has no solution in $\R$, since $x^2 \geq 0$ for every real $x$.
+
+\pause
+
+The remedy: \emph{extend} the real numbers by one new number
+\[
+i, \qquad \text{required to satisfy} \qquad i^2 = -1.
+\]
+
+\pause
+
+\begin{remark}
+Adjoining $i$ to $\R$ produces the field $\C$ — in which \emph{every} polynomial
+equation has a solution. That is where this lecture ends.
+\end{remark}
+\end{frame}
+
+\begin{frame}{Born of a scandal: the cubic (Italy, 1545)}
+Historically, nobody extended $\R$ because of $x^2+1=0$ — a quadratic with no
+solution was simply \emph{unsolvable}, end of story.
+
+\pause
+
+The trouble began with \emph{cubics}. Del Ferro and Tartaglia found a solution
+formula, published by Cardano in his \emph{Ars Magna} (1545): the equation
+$x^3 = px + q$ is solved by
+\[
+x = \sqrt[3]{\tfrac{q}{2} + \sqrt{\tfrac{q^2}{4} - \tfrac{p^3}{27}}}
+  + \sqrt[3]{\tfrac{q}{2} - \sqrt{\tfrac{q^2}{4} - \tfrac{p^3}{27}}}.
+\]
+
+\pause
+
+\begin{warning}
+Try it on $x^3 = 15x + 4$. The formula demands
+$x = \sqrt[3]{2 + \sqrt{-121}} + \sqrt[3]{2 - \sqrt{-121}}$ — a square root of
+a \emph{negative} number. Yet $x = 4$ plainly solves the equation:
+$64 = 60 + 4$. The formula is right, and it is speaking a language nobody
+understood yet.
+\end{warning}
+\note{Key historical point: complex numbers were forced on us by cubics with perfectly real roots — not by quadratics.}
+\end{frame}
+
+\begin{frame}{Bombelli's wild thought (1572)}
+Rafael Bombelli had no theory of complex numbers — no definition, no $i$.
+His idea (``a wild thought'', he admitted): treat the \emph{meaningless
+symbol} $\sqrt{-1}$ as if it were a number, obey every ordinary rule of
+algebra, and add one bookkeeping rule: $(\sqrt{-1})^2 = -1$.
+
+\pause
+
+\begin{steps}
+\step[expand the cube by the binomial rule — pure symbol pushing]{\left(2+\sqrt{-1}\right)^3 = 8 + 12\sqrt{-1} + 6\left(\sqrt{-1}\right)^2 + \left(\sqrt{-1}\right)^3}
+\step[apply the bookkeeping rule twice]{= 8 + 12\sqrt{-1} - 6 - \sqrt{-1} = 2 + 11\sqrt{-1} = 2 + \sqrt{-121}}
+\step[the same for the other cube root]{\sqrt[3]{2 + \sqrt{-121}} = 2 + \sqrt{-1}, \qquad \sqrt[3]{2 - \sqrt{-121}} = 2 - \sqrt{-1}}
+\step[the symbols cancel — and the answer is checkable]{x = \left(2 + \sqrt{-1}\right) + \left(2 - \sqrt{-1}\right) = 4}
+\end{steps}
+
+\pause
+
+\begin{remark}
+The symbol entered the computation, cancelled out, and delivered the honest,
+verifiable answer $4$ — with no claim about what $\sqrt{-1}$ \emph{is}.
+That claim is a debt, and this lecture pays it: our definition of $\C$ is
+precisely the licence for Bombelli's game.
+\end{remark}
+\end{frame}
+
+\begin{frame}{Two centuries of suspicion}
+\begin{itemize}
+\item \textbf{1637} — Descartes dismisses the new numbers as \emph{imaginary};
+the insult sticks and becomes the official name.
+\pause
+\item \textbf{1748} — Euler connects them to trigonometry:
+$e^{i\varphi} = \cos\varphi + i\sin\varphi$; in \textbf{1777} he introduces the
+symbol $i$.
+\pause
+\item \textbf{1797 / 1806} — Wessel and Argand independently draw complex
+numbers as \emph{points of the plane}.
+\pause
+\item \textbf{1831} — Gauss champions the planar picture, coins the name
+\emph{complex numbers}, and the suspicion finally dies.
+\pause
+\item \textbf{1833} — Hamilton gives the modern definition: pairs $(a,b)$ of
+real numbers. Ten years later his quaternions — a 4-dimensional cousin of
+$\C$ — end up rotating every 3D game world you have played in.
+\end{itemize}
+\pause
+Today's lecture follows the same arc: calculate first, then draw the plane —
+in one lecture instead of three hundred years.
+\end{frame}
+
+\begin{frame}{You have used complex numbers today}
+\begin{itemize}
+\item \textbf{Multimedia.} Every JPEG, MP3 and video call runs on the Fast Fourier
+Transform — arithmetic of the \emph{roots of unity} we compute today.
+\pause
+\item \textbf{Graphics and games.} Multiplying by a complex number of modulus $1$
+\emph{rotates} the plane; one dimension up, quaternions rotate every 3D game world.
+\pause
+\item \textbf{Quantum computing.} A qubit is a pair of complex numbers; quantum
+interference is addition of complex numbers with different arguments.
+\pause
+\item \textbf{Fractals.} The Mandelbrot set is the iteration $z \mapsto z^2 + c$,
+coloured by how fast $|z| \to \infty$.
+\end{itemize}
+\note{Sell the chapter: FFT and rotations are the two examples to come back to later.}
+\end{frame}
+
+\section{The complex numbers}
+
+\begin{frame}{Definition}
+\begin{definition}
+A \emph{complex number} is an expression $a + bi$, where $a, b \in \R$.
+The set of all complex numbers is denoted by $\C$.
+\end{definition}
+
+\pause
+
+\begin{remark}
+Formally a complex number is just the pair $(a,b) \in \R \times \R$: the symbol $i$
+denotes $(0,1)$, and nothing is being ``imagined'' — $\C$ is the plane $\R^2$
+equipped with a multiplication.
+\end{remark}
+\end{frame}
+
+\begin{frame}{Arithmetic}
+\begin{definition}
+\[
+(a+bi) + (c+di) = (a+c) + (b+d)i, \qquad
+(a+bi)(c+di) = (ac - bd) + (ad + bc)i.
+\]
+\end{definition}
+
+The product rule is what formal expansion gives, using $i^2 = -1$:
+
+\pause
+
+\begin{steps}
+\step[expand formally]{(2+3i)(1-2i) = 2 - 4i + 3i - 6i^2}
+\step[use i^2 = -1]{= 2 - i + 6}
+\step[collect]{= 8 - i}
+\end{steps}
+\end{frame}
+
+\begin{frame}{Division}
+\begin{fact}
+For any complex number, $(a+bi)(a-bi) = a^2 + b^2$ — a real number.
+Hence every $z \neq 0$ has a multiplicative inverse.
+\end{fact}
+
+\pause
+
+\begin{steps}
+\step[multiply by the conjugate]{\frac{1}{1+i} = \frac{1-i}{(1+i)(1-i)}}
+\step[the denominator became real]{= \frac{1-i}{2} = \tfrac12 - \tfrac12\, i}
+\end{steps}
+
+\pause
+
+\begin{theorem}
+$\C$ with these operations is a \emph{field}: all rules of arithmetic
+familiar from $\Q$ and $\R$ hold. (Fields are the subject of the next lecture.)
+\end{theorem}
+\end{frame}
+
+\section{The complex plane}
+
+\begin{frame}{A number is a point}
+\begin{columns}
+\column
+A complex number $z = a + bi$ \emph{is} a point of the plane.
+
+Its length is the \emph{modulus}
+\[
+|z| = \sqrt{a^2 + b^2},
+\]
+and the angle to the positive real axis is the \emph{argument} $\arg(z)$.
+
+\textbf{Drag the point.}
+\column
+\widget{CPlane}{re=2, im=1.5}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Conjugation is reflection}
+\begin{columns}
+\column
+\begin{definition}
+The \emph{conjugate} of $z = a+bi$ is $\bar z = a - bi$.
+\end{definition}
+
+\begin{fact}
+$z \bar z = |z|^2$, \quad $\Re(z) = \tfrac12(z + \bar z)$, \quad
+$\overline{z+w} = \bar z + \bar w$, \quad $\overline{zw} = \bar z\, \bar w$.
+\end{fact}
+
+Geometrically: reflection across the real axis.
+\column
+\widget{CPlane}{re=2, im=1.5, showConj=true, showPolar=false}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Moduli measure distance}
+\begin{fact}
+$|z - w|$ is the distance between the points $z$ and $w$, and the
+\emph{triangle inequality} holds: $|z+w| \leq |z| + |w|$.
+\end{fact}
+
+\pause
+
+\begin{columns}
+\column
+Conditions on moduli describe geometric figures:
+\[
+\{\, z \in \C \mid |z - z_0| = r \,\}
+\]
+is the \emph{circle} of radius $r$ centred at $z_0$.
+
+For $z_0 = 0$ this is $|z| = r$, centred at the origin. A general $z_0$
+shifts the centre — mind the signs: $|z + 1 - i| = |z - (-1+i)|$ is centred
+at $-1+i$, \emph{not} at $1-i$.
+
+Drag $z$ onto the dashed circle: the distance $|z - z_0|$ hits $1.5$.
+\column
+\widget{CPlane}{re=0.5, im=1, circleRe=-1, circleIm=1, circleR=1.5, showPolar=false}
+\end{columns}
+\end{frame}
+
+\section{Polar form}
+
+\begin{frame}{The argument, precisely}
+\begin{definition}
+For $z \neq 0$, an \emph{argument} of $z$ is any angle $\varphi$ with
+\[
+\cos\varphi = \frac{a}{|z|}, \qquad \sin\varphi = \frac{b}{|z|}.
+\]
+The argument in $(-\pi, \pi]$ is the \emph{principal} argument.
+By convention $\arg(0) = 0$.
+\end{definition}
+
+\pause
+
+\begin{warning}
+$\tan\varphi = \tfrac{b}{a}$ alone does \emph{not} determine $\varphi$: always
+check the quadrant. For $z = -1 + i$ the argument is $\tfrac{3\pi}{4}$,
+not $-\tfrac{\pi}{4}$.
+\end{warning}
+\end{frame}
+
+\begin{frame}{Polar form}
+\begin{theorem}
+Every $z \in \C$ can be written as
+\[
+z = |z| \left( \cos\varphi + i \sin\varphi \right), \qquad \varphi = \arg(z).
+\]
+For $z = 0$ both sides are $0$ whatever the angle — which is why the
+convention $\arg(0) = 0$ costs nothing.
+\end{theorem}
+
+\pause
+
+\begin{example}
+$z = 1 + i$: modulus $|z| = \sqrt2$, argument $\tfrac{\pi}{4}$, so
+\[
+1 + i = \sqrt2 \left( \cos\tfrac{\pi}{4} + i \sin\tfrac{\pi}{4} \right).
+\]
+\end{example}
+\end{frame}
+
+\begin{frame}{Multiplication is rotation and scaling}
+\begin{theorem}
+$z_1 z_2 = |z_1||z_2| \big( \cos(\varphi_1 + \varphi_2) + i \sin(\varphi_1 + \varphi_2) \big)$
+— \emph{moduli multiply, arguments add}.
+\end{theorem}
+
+\widget{ComplexMul}{}
+\note{Let students drag w onto the unit circle: pure rotation, the heart of computer graphics.}
+\end{frame}
+
+\begin{frame}{De Moivre's formula}
+\begin{theorem}
+If $z = |z|(\cos\varphi + i\sin\varphi)$ and $n \in \N$, then
+$z^n = |z|^n \big( \cos(n\varphi) + i \sin(n\varphi) \big)$.
+\end{theorem}
+
+\pause
+
+\begin{steps}
+\step[polar form of 1+i]{(1+i)^{100} = \left(\sqrt2\right)^{100} \left( \cos\tfrac{100\pi}{4} + i \sin\tfrac{100\pi}{4} \right)}
+\step[De Moivre]{= 2^{50} \left( \cos 25\pi + i \sin 25\pi \right)}
+\step[angles live modulo 2 pi]{= 2^{50} (\cos\pi + i\sin\pi) = -2^{50}}
+\end{steps}
+\end{frame}
+
+\section{Roots}
+
+\begin{frame}{Every number has n distinct n-th roots}
+\begin{theorem}
+For $z = |z|(\cos\varphi + i\sin\varphi) \neq 0$, the solutions of $w^n = z$ are
+\[
+w_k = \sqrt[n]{|z|} \left( \cos\tfrac{\varphi + 2k\pi}{n} + i \sin\tfrac{\varphi + 2k\pi}{n} \right),
+\qquad k = 0, 1, \ldots, n-1.
+\]
+\end{theorem}
+
+\pause
+
+\begin{fact}
+The $n$ roots lie on a circle of radius $\sqrt[n]{|z|}$ and cut it into $n$
+equal arcs — a regular $n$-gon.
+\end{fact}
+\end{frame}
+
+\begin{frame}{Roots of unity}
+\begin{columns}
+\column
+Taking $z = 1$: the $n$-th \emph{roots of unity}
+\[
+z_k = \cos\tfrac{2k\pi}{n} + i \sin\tfrac{2k\pi}{n}.
+\]
+
+Multiplying by $z_1$ rotates the polygon by one step — press the button.
+
+These numbers drive the Fast Fourier Transform.
+\column
+\widget{RootsOfUnity}{n=6}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Example: the square roots of 2i}
+\begin{steps}
+\step[write 2i in polar form]{2i = 2 \left( \cos\tfrac{\pi}{2} + i \sin\tfrac{\pi}{2} \right)}
+\step[k = 0]{w_0 = \sqrt2 \left( \cos\tfrac{\pi}{4} + i \sin\tfrac{\pi}{4} \right) = 1 + i}
+\step[k = 1]{w_1 = \sqrt2 \left( \cos\tfrac{5\pi}{4} + i \sin\tfrac{5\pi}{4} \right) = -1 - i}
+\end{steps}
+
+\pause
+
+Check: $(1+i)^2 = 1 + 2i + i^2 = 2i$. ✓
+\end{frame}
+
+\section{Polynomials}
+
+\begin{frame}{The Fundamental Theorem of Algebra}
+\begin{theorem}
+Every polynomial $f \in \C[x]$ with $\deg(f) \geq 1$ has a root in $\C$.
+\end{theorem}
+
+\pause
+
+\begin{corollary}
+Every such $f$ factors completely into linear factors:
+\[
+f(x) = a (x - z_1)^{k_1} \cdots (x - z_m)^{k_m}.
+\]
+\end{corollary}
+
+\pause
+
+This is why we extended $\R$ in the first place: over $\C$, polynomial
+equations always have solutions — the extension is \emph{complete}.
+\end{frame}
+
+\begin{frame}{Quadratic equations over C}
+\begin{theorem}
+For $f(x) = ax^2 + bx + c$ with $a \neq 0$, the roots are
+$z_{0,1} = \frac{-b \mp \delta}{2a}$, where $\delta$ is any square root of
+$\Delta = b^2 - 4ac$.
+\end{theorem}
+
+\pause
+
+\begin{steps}
+\step[negative discriminant is no obstacle]{x^2 + 2x + 5: \quad \Delta = 4 - 20 = -16, \qquad \delta = 4i}
+\step[conjugate pair]{z_{0,1} = \frac{-2 \mp 4i}{2} = -1 \mp 2i}
+\end{steps}
+\end{frame}
+
+\begin{frame}{Real polynomials and conjugate roots}
+\begin{theorem}
+If $f \in \R[x]$ and $f(z) = 0$, then also $f(\bar z) = 0$: non-real roots of
+real polynomials come in conjugate pairs.
+\end{theorem}
+
+\pause
+
+\begin{corollary}
+Every real polynomial factors into real linear factors and real quadratic
+factors with $\Delta < 0$.
+\end{corollary}
+
+\pause
+
+\begin{example}
+$x^4 - 16 = (x-2)(x+2)(x^2+4)$ over $\R$; over $\C$ the last factor splits
+into $(x-2i)(x+2i)$ — a conjugate pair.
+\end{example}
+\end{frame}
+
+\begin{frame}{Summary}
+\begin{itemize}
+\item $\C$ = the plane with a multiplication; $i^2 = -1$; conjugate and modulus.
+\pause
+\item Polar form: multiplication \emph{rotates and scales}; De Moivre computes powers.
+\pause
+\item Every $z \neq 0$ has exactly $n$ $n$-th roots — a regular $n$-gon.
+\pause
+\item Fundamental Theorem of Algebra: over $\C$, polynomials factor completely.
+\pause
+\item \textbf{Next lecture:} what exactly is a \emph{field}? Groups, fields, and
+arithmetic modulo $p$.
+\end{itemize}
+\end{frame}
